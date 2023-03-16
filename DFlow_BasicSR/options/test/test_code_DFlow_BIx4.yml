@@ -1,0 +1,58 @@
+name: DFLOW
+model_type: VideoRecurrentModel
+scale: 4
+num_gpu: 1  # set num_gpu: 0 for cpu mode
+manual_seed: 0
+
+datasets:
+  #test_1:  # the 1st test dataset
+    #name: Vimeo90K
+    #type: VideoTestVimeo90KDataset
+    #dataroot_gt: /gdata1/gaors/VSRdataset/vimeo_septuplet/sequences
+    #dataroot_lq: /gdata1/gaors/VSRdataset/vimeo_septuplet_matlabLRx4/sequences
+    #meta_info_file: basicsr/data/meta_info/meta_info_Vimeo90K_test_GT.txt
+    #cache_data: false
+    #io_backend:
+      #type: disk
+    #num_frame: 7
+  test_1:
+    name: Vid4
+    type: VideoRecurrentTestDataset
+    dataroot_gt: /gdata1/gaors/VSRdataset/Vid4/GT
+    dataroot_lq: /gdata1/gaors/VSRdataset/Vid4/BIx4
+
+    cache_data: True
+    io_backend:
+      type: disk
+
+    num_frame: -1  # not needed
+
+
+# network structures
+network_g:
+  type: DFlow
+  num_feat: 64
+  num_block: 2
+  return_wimage: False
+
+# path
+path:
+  pretrain_network_g: /gdata1/gaors/DFlow_BasicSR/experiments/pretrained_models/dflow.pth   
+  strict_load_g: true
+
+# validation settings
+val:
+  save_img: true
+  flip_seq: false
+  center_frame_only: false
+  suffix: ~  # add suffix to saved images, if None, use exp name
+
+  metrics:
+    psnr: # metric name, can be arbitrary
+      type: calculate_psnr
+      crop_border: 0
+      test_y_channel: true
+    ssim:
+      type: calculate_ssim
+      crop_border: 0
+      test_y_channel: true
